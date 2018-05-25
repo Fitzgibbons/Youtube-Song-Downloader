@@ -22,14 +22,17 @@ def getlink(x):
             i += 1
     return search_results[i]
 for i in sys.argv:
-    if i == "-h" or i == "--help":
-        print("\n\nUsage:\npython youtube.py [directory name] [song file]\n\n\n[directory] will be created if not in existence\n[song file] should consist of one song name per line, no duplicate song names, begin additional information about song with semicolon")
+    if i == "-h" or i == "--help" or len(sys.argv) != 3:
+        print("\n\nUsage:\npython youtube.py [directory name] [song file]\n\n\n[directory]\tWill be created if not in existence\n[song file]\tShould consist of one song name per line\n\t\tBegin additional information about song with semicolon\n\t\tBegin song id with semicolon and backslash")
         exit()
 failedFiles = []
 successfullFiles = []
 savedir = sys.argv[1]
-with open(sys.argv[2]) as songfile:
-    songs = songfile.read().splitlines()
+try:
+    with open(sys.argv[2]) as songfile:
+        songs = songfile.read().splitlines()
+except:
+    raise Exception("Error reading file: " + sys.argv[2])
 for i, e in enumerate(songs):
     songs[i] = e.split(";")
 if not os.path.exists(savedir):
@@ -47,7 +50,10 @@ with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     for i in songs:
         timestart = time.time()
         try:
-            link = getlink(" ".join(i)[1:])
+            if (len(i) > 1 and i[1].strip() == "\\"):
+                link = i[1].strip()[1:]
+            else:
+                link = getlink(" ".join(i))
             ydl.download(["https://youtube.com/watch?v=" + link])
             found = False
             for fil in os.listdir(directory):
