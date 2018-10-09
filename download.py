@@ -50,7 +50,7 @@ with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     for i in songs:
         timestart = time.time()
         try:
-            if (len(i) > 1 and i[1].strip() == "\\"):
+            if (len(i) > 1 and i[1].strip()[0] == "\\"):
                 link = i[1].strip()[1:]
             else:
                 link = getlink(" ".join(i))
